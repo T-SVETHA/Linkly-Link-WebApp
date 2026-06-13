@@ -25,7 +25,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Run Selenium Tests
-      run: ./gradlew :web-tests:test
+      run: ./gradlew :selenium-tests:test
 
     # Publish XML test results directly to GitHub Actions Run summary
     - name: Publish Test Results
@@ -34,10 +34,12 @@ jobs:
       with:
         report_paths: '**/build/test-results/test/TEST-*.xml'
 
-    # Upload the detailed HTML report as an artifact
+    # Upload the detailed HTML report and styled Excel report as artifacts
     - name: Upload Test Report Artifact
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: selenium-test-reports
-        path: web-tests/build/reports/tests/test/
+        path: |
+          selenium-tests/build/reports/tests/test/
+          selenium-tests/reports/Selenium_UI_Report.xlsx

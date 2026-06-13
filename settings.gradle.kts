@@ -13,8 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Linkly-Link System"
-include(":parent")
-include(":child")
-include(":web-tests")
+rootProject.name = "Linkly-Link WebApp"
+include(":selenium-tests")
 
