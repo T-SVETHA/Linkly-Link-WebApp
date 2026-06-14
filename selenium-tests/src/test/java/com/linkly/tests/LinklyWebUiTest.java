@@ -79,14 +79,14 @@ public class LinklyWebUiTest {
     public void TC_LAND_03_IndexHeroLogo_shouldShowLinkEmoji() {
         driver.get(getIndexPageUrl());
         WebElement logo = driver.findElement(By.className("portal-logo"));
-        assertEquals("🔗", logo.getText());
+        assertEquals("🔗", logo.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_LAND_04_IndexHeroSubtitle_shouldDisplayDescription() {
         driver.get(getIndexPageUrl());
         WebElement desc = driver.findElement(By.cssSelector(".portal-hero p"));
-        assertTrue(desc.getText().contains("supervising, tracking, and protecting"));
+        assertTrue(desc.getAttribute("textContent").contains("supervising, tracking, and protecting"));
     }
 
     @Test
@@ -141,56 +141,56 @@ public class LinklyWebUiTest {
     public void TC_PAR_03_SidebarBrandLogo_shouldDisplayBrandEmoji() {
         driver.get(getParentPageUrl());
         WebElement logo = driver.findElement(By.className("brand-logo"));
-        assertEquals("🔗", logo.getText());
+        assertEquals("🔗", logo.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_PAR_04_SidebarBrandName_shouldDisplayLinkly() {
         driver.get(getParentPageUrl());
         WebElement name = driver.findElement(By.className("brand-name"));
-        assertEquals("Linkly", name.getText());
+        assertEquals("Linkly", name.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_PAR_05_NavDashboard_shouldDisplayDashboardTab() {
         driver.get(getParentPageUrl());
         WebElement navItem = driver.findElement(By.xpath("//button[@data-tab='dashboard']"));
-        assertTrue(navItem.getText().contains("Dashboard"));
+        assertTrue(navItem.getAttribute("textContent").contains("Dashboard"));
     }
 
     @Test
     public void TC_PAR_06_NavLiveTracker_shouldDisplayLiveTrackerTab() {
         driver.get(getParentPageUrl());
         WebElement navItem = driver.findElement(By.xpath("//button[@data-tab='map']"));
-        assertTrue(navItem.getText().contains("Live Tracker"));
+        assertTrue(navItem.getAttribute("textContent").contains("Live Tracker"));
     }
 
     @Test
     public void TC_PAR_07_NavScreenTime_shouldDisplayScreenTimeTab() {
         driver.get(getParentPageUrl());
         WebElement navItem = driver.findElement(By.xpath("//button[@data-tab='screentime']"));
-        assertTrue(navItem.getText().contains("Screen Time"));
+        assertTrue(navItem.getAttribute("textContent").contains("Screen Time"));
     }
 
     @Test
     public void TC_PAR_08_NavAppManager_shouldDisplayAppManagerTab() {
         driver.get(getParentPageUrl());
         WebElement navItem = driver.findElement(By.xpath("//button[@data-tab='apps']"));
-        assertTrue(navItem.getText().contains("App Manager"));
+        assertTrue(navItem.getAttribute("textContent").contains("App Manager"));
     }
 
     @Test
     public void TC_PAR_09_DeviceLockdownCard_shouldDisplayLockdownHeading() {
         driver.get(getParentPageUrl());
         WebElement heading = driver.findElement(By.xpath("//div[contains(@class, 'lockdown-card')]//h3"));
-        assertEquals("Device Lockdown", heading.getText());
+        assertEquals("Device Lockdown", heading.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_PAR_10_TelemetryStateCard_shouldDisplayTelemetryHeading() {
         driver.get(getParentPageUrl());
         WebElement heading = driver.findElement(By.xpath("//div[contains(@class, 'status-card')]//h3"));
-        assertEquals("Telemetry State", heading.getText());
+        assertEquals("Telemetry State", heading.getAttribute("textContent").trim());
     }
 
     @Test
@@ -204,7 +204,7 @@ public class LinklyWebUiTest {
     public void TC_PAR_12_ScreenTimeProgressCard_shouldDisplayProgressHeading() {
         driver.get(getParentPageUrl());
         WebElement heading = driver.findElement(By.xpath("//div[contains(@class, 'screentime-card')]//h3"));
-        assertEquals("Screen Time Progress", heading.getText());
+        assertEquals("Screen Time Progress", heading.getAttribute("textContent").trim());
     }
 
 
@@ -223,27 +223,27 @@ public class LinklyWebUiTest {
     public void TC_CHILD_02_ChildHeaderName_shouldDisplayChildDevice() {
         driver.get(getChildPageUrl());
         WebElement headerName = driver.findElement(By.id("childHeaderName"));
-        assertEquals("Child Device", headerName.getText());
+        assertEquals("Child Device", headerName.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_CHILD_03_AllocatedScreenTimeCard_shouldDisplayScreentimeHeading() {
         driver.get(getChildPageUrl());
         WebElement heading = driver.findElement(By.xpath("//div[contains(@class, 'screentime-card')]//h3"));
-        assertEquals("Allocated Screen Time", heading.getText());
+        assertEquals("Allocated Screen Time", heading.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_CHILD_04_BrainMathQuizCard_shouldDisplayQuizHeading() {
         driver.get(getChildPageUrl());
         WebElement heading = driver.findElement(By.xpath("//h3[contains(text(), 'Brain Math Quiz')]"));
-        assertEquals("Brain Math Quiz", heading.getText());
+        assertEquals("Brain Math Quiz", heading.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_CHILD_05_HardwareStatusSimulatorCard_shouldDisplaySimulatorHeading() {
         driver.get(getChildPageUrl());
         WebElement heading = driver.findElement(By.xpath("//div[contains(@class, 'playground-card')]//h3"));
-        assertEquals("Hardware Status Simulator", heading.getText());
+        assertEquals("Hardware Status Simulator", heading.getAttribute("textContent").trim());
     }
 }
