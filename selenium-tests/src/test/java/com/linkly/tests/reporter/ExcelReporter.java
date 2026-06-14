@@ -204,7 +204,10 @@ public class ExcelReporter {
     public static void main(String[] args) {
         try {
             System.out.println("ExcelReporter: Starting Excel report generation for Selenium UI tests...");
-            File testResultsDir = new File("selenium-tests/build/test-results/test");
+            File testResultsDir = new File("build/test-results/test");
+            if (!testResultsDir.exists() || !testResultsDir.isDirectory()) {
+                testResultsDir = new File("selenium-tests/build/test-results/test");
+            }
             File reportsDir = new File("reports");
             if (!reportsDir.exists()) {
                 reportsDir.mkdirs();

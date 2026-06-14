@@ -109,14 +109,14 @@ public class LinklyWebUiTest {
     public void TC_LAND_07_IndexParentPortalButton_shouldDisplayEnterDashboard() {
         driver.get(getIndexPageUrl());
         WebElement btn = driver.findElement(By.cssSelector(".parent-card button"));
-        assertEquals("Enter Dashboard", btn.getText());
+        assertEquals("Enter Dashboard", btn.getAttribute("textContent").trim());
     }
 
     @Test
     public void TC_LAND_08_IndexChildCompanionButton_shouldDisplayBootCompanion() {
         driver.get(getIndexPageUrl());
         WebElement btn = driver.findElement(By.cssSelector(".child-card button"));
-        assertEquals("Boot Companion", btn.getText());
+        assertEquals("Boot Companion", btn.getAttribute("textContent").trim());
     }
 
     // ==========================================
