@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linkly - Real-Time Parent Dashboard</title>
+    
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet.js Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom Theme Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- --- SIDEBAR NAVIGATION --- -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-logo">🔗</span>
+                <h1 class="brand-name">Linkly</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <span class="nav-icon">📊</span> Dashboard
+                </button>
+                <button class="nav-item" data-tab="map">
+                    <span class="nav-icon">🗺️</span> Live Tracker
+                </button>
+                <button class="nav-item" data-tab="screentime">
+                    <span class="nav-icon">⏳</span> Screen Time
+                </button>
+                <button class="nav-item" data-tab="apps">
+                    <span class="nav-icon">📱</span> App Manager
+                </button>
+            </nav>
+            
+            <!-- Quick pairing in sidebar footer -->
+            <div class="sidebar-footer">
+                <div class="sidebar-card">
+                    <h4>Link Device</h4>
+                    <p>Enter 6-char token</p>
+                    <div class="pair-input-group">
+                        <input type="text" id="pairCodeInput" placeholder="EX: A1B2C3" maxlength="6">
+                        <button id="btnPairSubmit">Link</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- --- MAIN CONTENT AREA --- -->
+        <main class="main-content">
+            
+            <!-- TOP BAR HEADER -->
+            <header class="topbar">
+                <div class="header-left">
+                    <div class="selector-wrapper">
+                        <span class="dropdown-icon">👶</span>
+                        <select id="childSelector" class="child-select">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+                    <span class="connection-pill offline" id="connectionStatusBadge">
+                        <span class="pulse-dot"></span> <span id="connectionStatusText">Offline</span>
+                    </span>
+                    <a href="index.html" class="btn-secondary" style="text-decoration: none; font-size: 0.8rem; padding: 0.4rem 0.8rem;">🚪 Exit</a>
+                </div>
+                
+                <div class="header-right">
+                    <div class="battery-indicator" id="headerBattery">
+                        <span class="battery-icon">🔋</span> <span id="headerBatteryText">--%</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB CONTENT: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-pane active">
+                <div class="dashboard-grid">
+                    
+                    <!-- Remote Lockdown Card -->
+                    <div class="grid-card accent-red lockdown-card">
+                        <div class="card-header">
+                            <span class="card-icon">🔒</span>
+                            <h3>Device Lockdown</h3>
+                        </div>
+                        <p class="card-description">Instantly freeze all operations on your child's companion device.</p>
+                        
+                        <div class="lockdown-toggle-wrapper">
+                            <label class="switch">
+                                <input type="checkbox" id="lockdownSwitch">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="lockdown-status-label" id="lockdownStatusText">DEVICE UNLOCKED</span>
+                        </div>
+                        
+                        <div class="pin-override-section">
+                            <label for="bypassPinInput">Bypass Override PIN</label>
+                            <div class="pin-input-group">
+                                <input type="text" id="bypassPinInput" placeholder="PIN" maxlength="4">
+                                <button id="btnUpdatePin" class="btn-secondary">Update</button>
+                            </div>
+                            <small class="helper-text">4-digit PIN for emergency offline device unlock</small>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Summary Card -->
+                    <div class="grid-card status-card">
+                        <div class="card-header">
+                            <span class="card-icon">📱</span>
+                            <h3>Telemetry State</h3>
+                        </div>
+                        <div class="telemetry-list">
+                            <div class="telemetry-item">
+                                <span class="telemetry-label">Active Screen:</span>
+                                <span class="telemetry-val highlight-blue" id="activeScreenText">None</span>
+                            </div>
+                            <div class="telemetry-item">
+                                <span class="telemetry-label">GPS Permission:</span>
+                                <span class="permission-status permission-disabled" id="permLocationText">DISABLED</span>
+                            </div>
+                            <div class="telemetry-item">
+                                <span class="telemetry-label">Usage Access:</span>
+                                <span class="permission-status permission-disabled" id="permUsageText">DISABLED</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini Map Card -->
+                    <div class="grid-card map-card-summary">
+                        <div class="card-header">
+                            <span class="card-icon">📍</span>
+                            <h3>Real-time GPS</h3>
+                        </div>
+                        <div id="miniMap" class="small-map-frame"></div>
+                        <div class="map-summary-footer">
+                            <span id="gpsCoordinatesText">Telemetry Offline</span>
+                            <span id="gpsTimestampText" class="muted-timestamp">No coordinates synced</span>
+                        </div>
+                    </div>
+
+                    <!-- Screen Time Sync Progress Card -->
+                    <div class="grid-card screentime-card">
+                        <div class="card-header">
+                            <span class="card-icon">⏳</span>
+                            <h3>Screen Time Progress</h3>
+                        </div>
+                        <div class="screentime-progress-wrapper">
+                            <div class="progress-labels">
+                                <span id="progressUsedText">Used: 0 mins</span>
+                                <span id="progressLimitText">Limit: 60 mins</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="screentimeProgressBar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-limit-setting">
+                            <label for="quickLimitInput">Change Daily Limit (mins)</label>
+                            <div class="limit-input-group">
+                                <input type="number" id="quickLimitInput" min="0" placeholder="60">
+                                <button id="btnUpdateLimit" class="btn-primary">Set Limit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Alerts Feed Card -->
+                    <div class="grid-card alerts-feed-card" style="grid-column: 1 / -1;">
+                        <div class="card-header">
+                            <span class="card-icon">🔔</span>
+                            <h3>Recent Security Alerts</h3>
+                        </div>
+                        <p class="card-description">Real-time log of device handshakes, lock updates, and math quiz performance scores.</p>
+                        <div id="alertsFeedList" class="compact-list" style="max-height: 280px; overflow-y: auto; gap: 0.75rem; padding: 0.25rem;">
+                            <div style="text-align:center; padding: 1.5rem; color:#64748b; font-size:0.85rem;">No notifications recorded for this child node.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB CONTENT: LIVE TRACKER (MAPS & SAFE ZONES) -->
+            <section id="tab-map" class="tab-pane">
+                <div class="full-tab-split">
+                    <div class="map-visual-pane">
+                        <div id="fullMap" class="large-map-frame"></div>
+                    </div>
+                    <div class="map-sidebar-pane">
+                        <div class="grid-card">
+                            <div class="card-header">
+                                <span class="card-icon">🛡️</span>
+                                <h3>Safe Zones</h3>
+                            </div>
+                            
+                            <!-- Safe Zone Creator Form -->
+                            <div class="safezone-form">
+                                <h4>Create Geo-Fence</h4>
+                                <div class="form-group">
+                                    <input type="text" id="szName" placeholder="Zone Name (e.g. Home, School)">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="number" id="szLat" step="any" placeholder="Latitude">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" id="szLng" step="any" placeholder="Longitude">
+                                    </div>
+                                </div>
+                                <div class="form-row align-center">
+                                    <div class="form-group flex-2">
+                                        <input type="number" id="szRadius" placeholder="Radius (meters)" min="10" max="5000">
+                                    </div>
+                                    <button id="btnPinCurrentLocation" class="btn-secondary sz-pin-btn" title="Pin child's current location">📍 Pin</button>
+                                </div>
+                                <button id="btnSaveSafeZone" class="btn-primary btn-block">Add Boundary</button>
+                            </div>
+
+                            <!-- Safe Zones List -->
+                            <div class="safezones-list-container">
+                                <h4>Configured Boundaries</h4>
+                                <div id="szList" class="compact-list">
+                                    <!-- Dynamic Safe Zone items injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB CONTENT: SCREEN TIME & APP STATS -->
+            <section id="tab-screentime" class="tab-pane">
+                <div class="dashboard-grid">
+                    
+                    <!-- Stats Card -->
+                    <div class="grid-card full-width-card">
+                        <div class="card-header">
+                            <span class="card-icon">📊</span>
+                            <h3>Daily App Time Breakdown</h3>
+                        </div>
+                        <p class="muted-p">Top-used applications sorted by screens sessions synchronized from child's device.</p>
+                        
+                        <div class="app-stats-chart-wrapper">
+                            <div id="usageStatsChart" class="custom-bar-chart">
+                                <!-- Dynamic usage bars injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB CONTENT: INSTALLED APP LIST -->
+            <section id="tab-apps" class="tab-pane">
+                <div class="grid-card full-width-card">
+                    <div class="card-header flex-between">
+                        <div class="title-with-desc">
+                            <span class="card-icon">📱</span>
+                            <h3>Installed Applications</h3>
+                        </div>
+                        <div class="search-apps-wrapper">
+                            <input type="text" id="searchAppsInput" placeholder="Search application packages...">
+                        </div>
+                    </div>
+                    
+                    <div class="installed-apps-grid" id="installedAppsGrid">
+                        <!-- Dynamic list of apps injected here -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Leaflet.js Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- ES6 Script using Firebase Modules -->
+    <script type="module" src="parent.js"></script>
+</body>
+</html>

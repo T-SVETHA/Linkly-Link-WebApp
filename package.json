@@ -1,0 +1,11 @@
+{
+  "name": "linkly-selenium-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test:e2e": "mocha selenium-tests/tests/*.test.js --timeout 60000 --reporter selenium-tests/excel-reporter.cjs"
+  },
+  "devDependencies": {
+    "exceljs": "^4.4.0",
+    "mocha": "^10.4.0"
+  }
+}
