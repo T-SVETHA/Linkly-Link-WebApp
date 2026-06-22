@@ -17,32 +17,20 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        distribution: 'zulu'
-        java-version: '17'
-        cache: 'gradle'
+        node-version: '20'
 
-    - name: Grant Execute Permission for Gradlew
-      run: chmod +x gradlew
+    - name: Install dependencies
+      run: npm ci
 
-    - name: Run Selenium Tests
-      run: ./gradlew :selenium-tests:test
+    - name: Run Mocha Tests
+      run: npm run test:e2e
 
-    # Publish XML test results directly to GitHub Actions Run summary
-    - name: Publish Test Results
-      uses: mikepenz/action-junit-report@v4
-      if: always() # Runs even if tests fail
-      with:
-        report_paths: '**/build/test-results/test/TEST-*.xml'
-
-    # Upload the detailed HTML report and styled Excel report as artifacts
     - name: Upload Test Report Artifact
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: selenium-test-reports
-        path: |
-          selenium-tests/build/reports/tests/test/
-          selenium-tests/reports/Selenium_UI_Report.xlsx
+        name: Selenium_UI_Report
+        path: reports/
